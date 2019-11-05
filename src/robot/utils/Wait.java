@@ -15,6 +15,7 @@ public class Wait {
 	}
 	
 	public static void waitForSeconds(double seconds) {
+		if (seconds < 0) throw new IllegalArgumentException("Seconds must be positive!");
 		long startTime = System.currentTimeMillis();
 		while (System.currentTimeMillis() - startTime < seconds * 1000
 				&& RunHandler.isRunning()) {
