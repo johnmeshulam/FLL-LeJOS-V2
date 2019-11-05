@@ -44,6 +44,7 @@ public class RobotChassis implements Chassis{
 
 	@Override
 	public void forwardDrive(double speed, int degrees, boolean brake) {
+		if (degrees < 0) throw new IllegalArgumentException("Degrees must be positive!");
 		leftMotor.resetEncoder();
 		
 		syncDrive(speed, speed);
@@ -58,6 +59,7 @@ public class RobotChassis implements Chassis{
 
 	@Override
 	public void backwardDrive(double speed, int degrees, boolean brake) {
+		if (degrees < 0) throw new IllegalArgumentException("Degrees must be positive!");
 		leftMotor.resetEncoder();
 		
 		syncDrive(-speed, -speed);
@@ -97,6 +99,7 @@ public class RobotChassis implements Chassis{
 
 	@Override
 	public void tankDrive(double leftSpeed, double rightSpeed, int degrees, boolean brake) {
+		if (degrees < 0) throw new IllegalArgumentException("Degrees must be positive!");
 		leftMotor.resetEncoder();
 		rightMotor.resetEncoder();
 		
