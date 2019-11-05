@@ -3,6 +3,7 @@ package robot.hardware.motors;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.robotics.RegulatedMotor;
 import robot.runs.RunHandler;
+import robot.utils.Wait;
 
 public class LargeMotor extends RobotMotor {
 
@@ -58,24 +59,25 @@ public class LargeMotor extends RobotMotor {
 
 	@Override
 	protected int convertSpeed(double speed) {
+		if (speed > 1.0 || speed < -1.0) throw new IllegalArgumentException("Speed must be between 1 and -1!");
 		return (int) Math.min(Math.max((Math.abs(speed) * l.getMaxSpeed()), 0), l.getMaxSpeed());
 	}
 
 	@Override
-	/**
-	 * Defaults to forward, insert negative degrees to go back
-	 */
 	public void rotateDegrees(double speed, int degrees, boolean brake) {
+		if (degrees < 0) throw new IllegalArgumentException("Degrees must be positive!");
 		l.resetTachoCount();
 
-		if (degrees >= 0) {
+		if (speed >= 0) {
 			this.forward(speed);
-			while (Math.abs(l.getTachoCount()) < degrees && RunHandler.isRunning())
-				;
+			Wait.waitFor(() -> {
+				return Math.abs(l.getTachoCount()) < degrees;
+			});
 		} else {
 			this.backward(speed);
-			while (-Math.abs(l.getTachoCount()) > degrees && RunHandler.isRunning())
-				;
+			Wait.waitFor(() -> {
+				return -Math.abs(l.getTachoCount()) > degrees;
+			});
 		}
 
 		if (brake) this.brake();
@@ -83,9 +85,6 @@ public class LargeMotor extends RobotMotor {
 	}
 
 	@Override
-	/**
-	 * Defaults to forward, insert negative power to go back
-	 */
 	public void rotateSeconds(double speed, double seconds, boolean brake) {
 		l.resetTachoCount();
 		long startTime = System.currentTimeMillis();
